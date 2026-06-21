@@ -54,7 +54,7 @@
     "langchain": "^1.0.4",
     "lucide-react": "^0.553.0",
     "multer": "^2.0.2",
-    "next": "16.0.2",
+    "next": "16.2.9",
     "next-auth": "^5.0.0-beta.30",
     "next-intl": "^4.5.3",
     "openai": "^6.8.1",
