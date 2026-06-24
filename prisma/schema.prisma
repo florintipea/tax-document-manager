@@ -1,0 +1,426 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model with comprehensive security
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  passwordHash  String
+  image         String?
+  
+  // Security
+  twoFactorEnabled      Boolean @default(false)
+  twoFactorSecret       String? // encrypted TOTP secret
+  twoFactorBackupCodes  String  @default("[]") // encrypted JSON array of bcrypt hashes
+  failedLoginAttempts Int    @default(0)
+  lockedUntil      DateTime?
+  tokenVersion     Int      @default(0)
+  
+  // Role & Permissions
+  role            String    @default("user") // user, admin, super_admin
+  
+  // Preferences
+  country         String    @default("DE")
+  language        String    @default("de")
+  timezone        String    @default("Europe/Berlin")
+  theme           String    @default("system") // light, dark, system
+  numberOfChildren Int      @default(0)
+  deFilingMode     String   @default("einzel") // einzel | zusammen
+  spouseIncome     Float    @default(0)
+  steuerklasse    String    @default("I") // I–VI
+  bundesland      String?   // optional DE Bundesland code
+  isCrossBorder   Boolean   @default(false)
+  hasRentalIncome Boolean   @default(false)
+  
+  // Subscription
+  subscription   Subscription?
+  paymentMethods PaymentMethod[]
+  
+  // Relations
+  documents           Document[]
+  sessions            Session[]
+  accounts            Account[]
+  securityEvents      SecurityEvent[]
+  taxAdvisors         TaxAdvisor[]
+  aiInteractions      AIInteraction[]
+  aiProviders         UserAIProvider[]
+  wisoConnection      WISOConnection?
+  notebookLMConnections NotebookLMConnection[]
+  securityThreats     SecurityThreat[]
+  testReports         TestReport[]
+  pricingSurvey       PricingSurvey?
+  pricingSurveyInvite PricingSurveyInvite?
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  lastLoginAt    DateTime?
+  
+  @@index([email])
+  @@index([createdAt])
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Subscription model
+model Subscription {
+  id                  String   @id @default(cuid())
+  userId               String   @unique
+  planId               String   // free, trial, beta-tester, standard, advisor (legacy: basic, professional)
+  billingInterval      String?  // license, updates (legacy: monthly, yearly)
+  steuerjahr           Int?     // tax year covered by yearly plan
+  status               String   // active, canceled, past_due, unpaid, expired
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String? @unique
+  stripePriceId        String?
+  
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// Saved payment method preferences (PayPal, Google Pay, Apple Pay, bank, card)
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // paypal, google_pay, apple_pay, bank_account, card
+  isDefault Boolean  @default(false)
+  label     String?
+  metadata  String?  // JSON — provider refs, last4, etc.
+  status    String   @default("pending") // pending, connected, expired
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, type])
+}
+
+// Document model with comprehensive metadata
+model Document {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  originalName    String
+  categoryId      String?
+  category        DocumentCategory? @relation(fields: [categoryId], references: [id])
+  
+  // File info
+  fileUrl         String
+  fileSize        Int
+  fileHash        String?
+  contentHash     String?
+  mimeType        String
+  thumbnailUrl    String?
+  
+  // Tax info
+  year            Int
+  date            DateTime
+  isTaxRelevant   Boolean  @default(false)
+  taxAmount       Float?
+  taxCategory     String?
+  
+  // AI extraction
+  extractedText   String?
+  extractedData   String?  // JSON string for SQLite
+  aiConfidence    Float?
+  
+  // Metadata
+  tags            String
+  notes           String?
+  isOffline       Boolean  @default(false)
+  lastSynced      DateTime?
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([userId, fileHash])
+  @@index([year])
+  @@index([isTaxRelevant])
+  @@index([createdAt])
+}
+
+// Document categories
+model DocumentCategory {
+  id          String     @id @default(cuid())
+  name        String
+  icon        String?
+  color       String?
+  isDefault   Boolean    @default(false)
+  userId      String?    // null for global categories
+  documents   Document[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  @@index([userId])
+}
+
+// Security events for audit trail
+model SecurityEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // login, logout, password_change, 2fa_enabled, etc.
+  severity    String   // low, medium, high, critical
+  description String
+  ipAddress   String
+  userAgent   String
+  metadata    String? // JSON string for SQLite
+  resolved    Boolean  @default(false)
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  timestamp   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([type])
+  @@index([severity])
+  @@index([timestamp])
+}
+
+// Tax advisors (shared access)
+model TaxAdvisor {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  email           String
+  company         String
+  phone           String?
+  permissions     String   // JSON string for SQLite
+  sharedDocuments String   // JSON string for SQLite
+  accessExpiry    DateTime?
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([email])
+}
+
+// Per-user AI provider connections (encrypted API keys / OAuth tokens)
+model UserAIProvider {
+  id              String   @id @default(cuid())
+  userId          String
+  provider        String   // openai, anthropic, google, custom
+  connectionType  String   @default("api_key") // api_key, oauth
+  apiKey          String?  // Encrypted API key
+  refreshToken    String?  // Encrypted OAuth refresh token
+  accessToken     String?  // Encrypted OAuth access token
+  model           String?  // Optional model override
+  label           String?  // Display label for custom providers
+  isActive        Boolean  @default(true)
+  connectedAt     DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, provider])
+  @@index([userId])
+  @@index([provider])
+}
+
+// AI interactions for learning
+model AIInteraction {
+  id              String   @id @default(cuid())
+  userId          String
+  message         String
+  response        String
+  provider        String   // openai, anthropic, google
+  model           String   // gpt-4o, claude-3-5-sonnet, etc.
+  tokensUsed      Int?
+  latency         Int?     // milliseconds
+  confidence      Float?
+  feedback        String?  // positive, negative, neutral
+  context         String?  // JSON string for SQLite
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([userId])
+  @@index([provider])
+  @@index([createdAt])
+}
+
+// WISO Steuer Integration
+model WISOConnection {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  username        String
+  connected       Boolean  @default(false)
+  lastSync        DateTime?
+  syncEnabled     Boolean  @default(true)
+  credentials     String   // Encrypted credentials
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+// Notebook LM Integration
+model NotebookLMConnection {
+  id              String   @id @default(cuid())
+  userId          String
+  notebookId      String
+  name            String
+  apiKey          String   // Encrypted API key
+  connected       Boolean  @default(false)
+  lastSync        DateTime?
+  documentCount   Int      @default(0)
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([notebookId])
+}
+
+// Security Threats
+model SecurityThreat {
+  id              String   @id @default(cuid())
+  userId          String?
+  type            String   // malware, phishing, intrusion, data_breach, suspicious_activity
+  severity        String   // low, medium, high, critical
+  description     String
+  source          String
+  blocked         Boolean  @default(true)
+  resolved        Boolean  @default(false)
+  metadata        String?  // JSON string for SQLite
+  
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+  
+  @@index([userId])
+  @@index([type])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+// Beta feedback and error reports from testers
+model TestReport {
+  id          String   @id @default(cuid())
+  userId      String?
+  type        String   // feedback, error, bug
+  status      String   @default("open") // open, in_progress, resolved, closed
+  severity    String   @default("medium") // low, medium, high, critical
+  title       String?
+  message     String
+  pageUrl     String?
+  userAgent   String?
+  stackTrace  String?
+  metadata    String?  // JSON string
+  platform    String?  // web, android, ios
+  adminNotes  String?
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  resolvedAt  DateTime?
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([severity])
+  @@index([createdAt])
+}
+
+// Post-beta pricing willingness survey
+model PricingSurvey {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  priceRange    String   // under_20, 20_40, 40_60, 60_100, over_100, custom
+  willingToPay  Float?
+  planInterest  String?  // standard, advisor, unsure
+  comment       String?
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Queued invite when beta test phase ends
+model PricingSurveyInvite {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  invitedAt DateTime @default(now())
+  dismissed Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}

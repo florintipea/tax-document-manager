@@ -1,0 +1,69 @@
+# Render.com – TaxDoc beta hosting (works from anywhere, no same Wi-Fi needed)
+services:
+  - type: web
+    name: taxdoc-beta
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    # Fast health check — /auth/login is slow during cold start and delays "live" status.
+    healthCheckPath: /api/health
+    disk:
+      name: taxdoc-data
+      mountPath: /var/data
+      sizeGB: 2
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: DATABASE_URL
+        value: file:/var/data/prod.db
+      - key: HOSTNAME
+        value: 0.0.0.0
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: TEST_PHASE_ENABLED
+        value: "true"
+      - key: ADMIN_EMAIL
+        value: lf.tipea@gmail.com
+      # Required secret — set in Render dashboard before first login:
+      #   ADMIN_PASSWORD = Admin@2024!Secure  (or your chosen password)
+      - key: ADMIN_PASSWORD
+        sync: false
+      # ensure-admin syncs password from ADMIN_PASSWORD on startup when hash differs.
+      # Optional one-time override: ADMIN_FORCE_RESET=true (then remove after login works).
+      # - key: ADMIN_FORCE_RESET
+      #   sync: false
+      # Stripe billing — set in Render dashboard, then redeploy:
+      # - key: STRIPE_SECRET_KEY
+      #   sync: false
+      # - key: STRIPE_WEBHOOK_SECRET
+      #   sync: false
+      # One-time license + yearly update subscription prices (Stripe Dashboard → Products):
+      # - key: STRIPE_PRICE_STANDARD_LICENSE
+      #   sync: false
+      # - key: STRIPE_PRICE_STANDARD_UPDATES
+      #   sync: false
+      # - key: STRIPE_PRICE_ADVISOR_LICENSE
+      #   sync: false
+      # - key: STRIPE_PRICE_ADVISOR_UPDATES
+      #   sync: false
+      # Required for live AI chat — set in Render dashboard, then redeploy:
+      # - key: OPENAI_API_KEY
+      #   sync: false
+      # - key: ANTHROPIC_API_KEY
+      #   sync: false
+      # - key: GOOGLE_AI_API_KEY
+      #   sync: false
+      # Optional – distributed rate limiting (Upstash/Render Redis). Omit for in-memory fallback.
+      # - key: REDIS_URL
+      #   sync: false
+      # Optional – use CF-Connecting-IP when behind Cloudflare (see dist/mobile/CLOUDFLARE-SETUP.txt)
+      # - key: TRUST_CLOUDFLARE
+      #   value: "true"

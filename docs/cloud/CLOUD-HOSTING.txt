@@ -1,0 +1,80 @@
+TaxDoc Cloud Hosting (Render)
+=============================
+
+Live URL: https://taxdoc-beta.onrender.com
+
+Why does the app "disappear" after ~15 minutes?
+------------------------------------------------
+Render Free tier spins down after ~15 minutes of inactivity.
+You may see Render's default welcome/loading page — not a bug in TaxDoc.
+Cold start (migrations + server) typically takes 1–2 minutes.
+
+User instructions (German):
+  1. Seite öffnen und ~1 Minute warten
+  2. Hard-Refresh (Neu laden)
+  3. Auf dem Login: Banner „Cloud-Instanz“ erscheint nur beim Aufwachen → „Erneut laden“
+
+Health endpoint: /api/health
+Admin security status: /api/health?admin=1 (admin login required)
+Wake helper page: /wake.html (polls health, redirects when ready)
+
+Admin login (Render dashboard → Environment)
+--------------------------------------------
+Required secrets (never committed to git):
+  ADMIN_EMAIL=lf.tipea@gmail.com
+  ADMIN_PASSWORD=<your password, e.g. Admin@2024!Secure>
+
+On every startup, ensure-admin:
+  - creates the admin if missing (password = ADMIN_PASSWORD)
+  - clears admin lockout (failedLoginAttempts, lockedUntil)
+  - syncs passwordHash from ADMIN_PASSWORD when it does not match the stored hash
+
+Sign in with the exact ADMIN_EMAIL and ADMIN_PASSWORD values from Render.
+After changing ADMIN_PASSWORD in the dashboard, redeploy once so startup can sync.
+
+Optional force reset: ADMIN_FORCE_RESET=true (one deploy), then remove.
+Local one-time reset: npm run db:force-reset-admin
+
+Keep-alive (optional, beta — not needed on Starter):
+  */14 * * * * node scripts/keep-alive-render.mjs
+
+
+Optional: Render Starter ($7/mo)
+---------------------------------
+Permanent fix for spin-down, faster cold starts, and persistent disk.
+
+Note: render.yaml may specify plan: starter, but an existing service can
+still be on Free until you upgrade in the dashboard.
+
+Steps:
+  1. Open https://dashboard.render.com
+  2. Select service: taxdoc-beta
+  3. Settings → Instance Type (or Plan)
+  4. Change from Free to Starter ($7/month)
+  5. Confirm — no code changes required
+
+Benefits:
+  - No 15-minute sleep (24/7 uptime)
+  - Better cold-start performance if ever restarted
+  - Persistent disk (DATA_DIR=/var/data) retained across deploys
+
+After upgrade, users on *.onrender.com no longer see the wake banner when
+the app is healthy.
+
+
+Optional: REDIS_URL (distributed rate limiting)
+------------------------------------------------
+For multiple instances or stronger abuse protection across restarts:
+
+  1. Create Redis (Render Redis, Upstash, etc.)
+  2. Set REDIS_URL in Render dashboard → Environment
+  3. Redeploy
+
+Without REDIS_URL, rate limits use in-memory storage (fine for single instance).
+Startup log: "Rate limiting: redis" vs "memory (single instance)".
+Check: /api/health?admin=1 → security.rateLimit
+
+
+Optional: Cloudflare (edge WAF / DDoS)
+---------------------------------------
+See CLOUDFLARE-SETUP.txt in this folder.
