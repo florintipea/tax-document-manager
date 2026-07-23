@@ -1,0 +1,102 @@
+# =============================================================================
+# GitHub Actions CI — add manually if PAT lacks `workflow` scope
+# =============================================================================
+#
+# `npm run github:push` includes `.github/workflows/ci.yml` and `keep-alive.yml` by default.
+# Keep-alive (24/7 ping): docs/KEEP-ALIVE-SETUP.md and docs/KEEP-ALIVE-WORKFLOW-TO-ADD-MANUALLY.yml
+# Set GITHUB_PUSH_WORKFLOWS=false only if the PAT lacks **workflow** scope.
+# Without that scope, GitHub rejects workflow files via API:
+# "refusing to allow a Personal Access Token to create or update workflow
+# ... without `workflow` scope".
+#
+# ## Option A — Grant workflow scope (recommended)
+#
+# 1. Open https://github.com/settings/tokens
+# 2. Edit your existing token (or create a new **classic** token)
+# 3. Enable scopes:
+#    - **repo** — Full control of private repositories
+#    - **workflow** — Update GitHub Action workflows
+# 4. Save, then update `.env`: GITHUB_TOKEN=ghp_...
+# 5. Re-run: npm run github:prepare && npm run github:push
+#
+# ## Option B — Add workflow in GitHub UI (no token change)
+#
+# 1. Open your repo on GitHub
+# 2. Add file: `.github/workflows/ci.yml`
+# 3. Paste **only** the YAML between the `--- BEGIN ci.yml ---` and
+#    `--- END ci.yml ---` markers (not this whole file).
+# 4. Commit directly to `main`
+#
+# CI fix (2026-06): do not set NODE_ENV=production at job level — npm ci skips
+# devDependencies and `next build` fails without @tailwindcss/postcss. Set
+# NODE_ENV only on the build step.
+#
+# =============================================================================
+# --- BEGIN ci.yml (paste below this line in GitHub) ---
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Do NOT set NODE_ENV=production here — npm ci omits devDependencies when
+    # NODE_ENV is production, and the Next.js build needs @tailwindcss/postcss.
+    env:
+      DATABASE_URL: file:./ci.db
+      NEXTAUTH_SECRET: ci-nextauth-secret-at-least-32-characters-long
+      ENCRYPTION_KEY: ci-encryption-key-at-least-32-characters
+      NEXTAUTH_URL: http://127.0.0.1:3000
+      APP_URL: http://127.0.0.1:3000
+      TEST_PHASE_ENABLED: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Unit tests (Vitest)
+        run: npm run test:unit
+
+      - name: Security audit (high)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+# =============================================================================
+# --- END ci.yml ---
+# =============================================================================

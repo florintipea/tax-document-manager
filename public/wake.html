@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaxDoc startet…</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+      color: #1e3a8a;
+    }
+    .card {
+      max-width: 420px;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 10px 40px rgba(30, 58, 138, 0.12);
+      text-align: center;
+    }
+    .spinner {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 4px solid #dbeafe;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 1.25rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #2563eb;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    p { line-height: 1.5; color: #334155; }
+    .hint { font-size: 0.875rem; color: #64748b; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" aria-hidden="true"></div>
+    <h1>TaxDoc startet…</h1>
+    <p>Die Cloud-Instanz wird nach Inaktivität geweckt. Das kann 1–2 Minuten dauern.</p>
+    <p class="hint" id="status">Verbindung wird geprüft…</p>
+    <button type="button" id="retry">Erneut laden</button>
+  </div>
+  <script>
+    var statusEl = document.getElementById('status');
+    var attempts = 0;
+    function check() {
+      attempts += 1;
+      statusEl.textContent = 'Versuch ' + attempts + ' — bitte warten…';
+      fetch('/api/health', { cache: 'no-store' })
+        .then(function (r) {
+          if (r.ok) {
+            window.location.replace('/');
+            return;
+          }
+          throw new Error('not ready');
+        })
+        .catch(function () {
+          statusEl.textContent = 'Noch nicht bereit — automatischer Neustart in 15 Sek.';
+          setTimeout(check, 15000);
+        });
+    }
+    document.getElementById('retry').addEventListener('click', function () {
+      window.location.reload();
+    });
+    check();
+  </script>
+</body>
+</html>

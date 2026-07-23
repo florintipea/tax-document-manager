@@ -1,0 +1,58 @@
+# =============================================================================
+# GitHub Actions Keep-Alive — manuell einfügen wenn PAT kein `workflow`-Scope hat
+# =============================================================================
+#
+# Siehe auch: docs/KEEP-ALIVE-SETUP.md
+#
+# Wenn `npm run github:push` ohne workflow-Scope läuft, werden
+# `.github/workflows/*` ausgeschlossen. Dann:
+#
+# 1. Repo auf GitHub öffnen
+# 2. Add file → `.github/workflows/keep-alive.yml`
+# 3. Nur den YAML-Block zwischen BEGIN und END einfügen (nicht diese ganze Datei)
+# 4. Commit auf `main`
+#
+# Ablaufdatum: `.taxdoc-keepalive-until` im Repo (aktuell 2026-07-21)
+# Verlängern: npm run keepalive:extend → Datei committen/pushen
+#
+# =============================================================================
+# --- BEGIN keep-alive.yml (ab hier in GitHub einfügen) ---
+# =============================================================================
+
+name: Render Keep-Alive
+
+on:
+  schedule:
+    # Every 14 minutes — keeps Render free tier awake (GitHub cron may drift ±few min)
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check 2-week expiry
+        id: expiry
+        run: |
+          EXPIRY=$(tr -d '[:space:]' < .taxdoc-keepalive-until)
+          TODAY=$(date -u +%Y-%m-%d)
+          echo "Expiry date: $EXPIRY (today UTC: $TODAY)"
+          if [[ "$TODAY" > "$EXPIRY" ]]; then
+            echo "expired=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Keep-alive expired on $EXPIRY. Extend: npm run keepalive:extend, commit .taxdoc-keepalive-until, push."
+          else
+            echo "expired=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ping Render health
+        if: steps.expiry.outputs.expired != 'true'
+        run: curl -fsS https://taxdoc-beta.onrender.com/api/health
+
+# =============================================================================
+# --- END keep-alive.yml ---
+# =============================================================================

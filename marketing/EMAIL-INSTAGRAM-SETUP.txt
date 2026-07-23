@@ -1,0 +1,51 @@
+An: lf.tipea@gmail.com
+Betreff: TaxDoc Instagram — Bio & Link zum Kopieren
+
+(Hinweis: Automatischer Versand war nicht möglich — SMTP in .env ist auskommentiert; lokaler mail/sendmail wurde von Gmail abgelehnt (SPF/DKIM). Bitte diesen Text manuell per Gmail an dich senden oder Inhalt kopieren.)
+
+---
+
+Hallo!
+
+Hier ist alles, was du für den TaxDoc-Instagram-Account brauchst — Schritt für Schritt, auch wenn du Instagram noch nie für ein Projekt eingerichtet hast.
+
+---
+
+ANZEIGENAME (Profil bearbeiten → Name)
+TaxDoc — Steuer & Finanzen
+
+---
+
+BIO (einfach kopieren und einfügen)
+
+Steuererklärung ohne Chaos 📄
+KI + Dokumente + Rechner — made in DE
+🧪 Jetzt Beta testen (kostenlos)
+👇 Link für Zugang
+
+---
+
+LINK IN BIO
+
+https://taxdoc-beta.onrender.com/beta
+
+(In der App: Profil → Links → URL einfügen und speichern.)
+
+---
+
+NÄCHSTE SCHRITTE (kurz)
+
+1. Instagram-App öffnen → Profil → „Profil bearbeiten“
+2. Anzeigename und Bio von oben einfügen
+3. Link in Bio setzen (URL oben)
+4. Optional als Business-Profil umstellen (Menü → „Auf Business umstellen“)
+5. Dein erstes Reel: Im Projektordner findest du alles unter marketing/reel-01/ (Bilder, Skript, Anleitung ANLEITUNG-POSTEN.md und CAPCUT-ANLEITUNG.md)
+
+Die Beta-Seite ist live — Besucher können sich dort direkt anmelden.
+
+Viel Erfolg beim Start!
+TaxDoc Team
+
+---
+
+Weitere Details: docs/INSTAGRAM-START-HIER.md
