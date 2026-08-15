@@ -1,0 +1,24 @@
+# TaxDoc Meta Ad F — Hook „Selbstständig“
+# Creative: Hook 3 aus docs/ADS-WORLDCLASS-PLAYBOOK-DE.md
+# Ziel-URL: https://taxdoc-beta.onrender.com/beta-anfrage?utm_source=meta&utm_medium=paid&utm_campaign=beta_14d&utm_content=hook_selbststaendig
+# CTA-Button: Mehr erfahren
+
+--- PRIMÄRTEXT (einfügen) ---
+
+Selbstständig — und Belege das ganze Jahr verstreut?
+
+TaxDoc Beta hält Dokumente an einem Ort:
+hochladen, mit KI zuordnen, Überblick behalten.
+
+Kein Steuerberater-Ersatz. Keine Erstattungs-Garantie.
+Ein Hilfsmittel für alle, die digital Ordnung wollen.
+
+Beta gratis · Feedback willkommen · made in DE
+
+→ Beta anfragen
+
+--- ÜBERSCHRIFT ---
+Belege ganzjährig im Griff
+
+--- BESCHREIBUNG ---
+Für Selbstständige · Beta kostenlos

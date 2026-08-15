@@ -1,0 +1,39 @@
+TaxDoc Reel Bed — License Notes
+================================
+
+Track
+-----
+Title:  Piano Reflections
+Artist: Ahjay Stelino
+Source: Mixkit Free Stock Music
+Page:   https://mixkit.co/free-stock-music/piano-reflections/
+CDN:    https://assets.mixkit.co/music/22/22.mp3
+Local:  mixkit-piano-reflections.mp3
+        taxdoc-calm-piano.aac  (AAC remux for ffmpeg beds)
+
+License
+-------
+Mixkit Free Stock Music License
+URL: https://mixkit.co/license/#musicFree
+
+Summary (verify on Mixkit; this is not legal advice):
+- Free for commercial and personal use in video projects
+- Allowed: social media (Instagram/Facebook/etc.), YouTube, websites,
+  podcasts, online advertisements (e.g. Meta Ads)
+- Attribution appreciated but not required
+- Not permitted: redistribute as standalone music product; use in
+  CDs/DVDs, video games, or TV & radio broadcasts (per Mixkit terms)
+
+Why this track
+--------------
+Soft solo piano, calm/reflective mood — inviting trust for tax/finance
+content without aggressive beats or tense stingers.
+
+Instagram note
+--------------
+Instagram’s in-app music library usually cannot be downloaded into our
+MP4s. Best practice for organic Reels: post video, then add Audio from
+Instagram’s free library in the app (reach/discovery). For Meta Ads,
+use this baked royalty-free bed (Ads often need original or licensed
+audio baked into the creative).
+See: docs/INSTAGRAM-AUDIO-TIP.md

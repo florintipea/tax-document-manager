@@ -1,0 +1,2 @@
+# Ziel-URL mit UTM (Ads Manager → Website-URL)
+https://taxdoc-beta.onrender.com/beta-anfrage?utm_source=meta&utm_medium=paid&utm_campaign=beta_14d&utm_content=hook3_selbststaendig

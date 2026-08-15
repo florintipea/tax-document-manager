@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "deFilingMode" TEXT NOT NULL DEFAULT 'einzel';
+ALTER TABLE "User" ADD COLUMN "spouseIncome" REAL NOT NULL DEFAULT 0;

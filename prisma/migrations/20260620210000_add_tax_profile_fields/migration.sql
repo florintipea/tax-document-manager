@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "steuerklasse" TEXT NOT NULL DEFAULT 'I';
+ALTER TABLE "User" ADD COLUMN "isCrossBorder" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "User" ADD COLUMN "hasRentalIncome" BOOLEAN NOT NULL DEFAULT false;

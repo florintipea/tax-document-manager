@@ -1,0 +1,23 @@
+# TaxDoc Meta Ad G — Hook „UGC-Frage“
+# Creative: Hook 4 aus docs/ADS-WORLDCLASS-PLAYBOOK-DE.md · MP4: marketing/reel-hook-04/taxdoc-hook-04-music.mp4
+# Ziel-URL: https://taxdoc-beta.onrender.com/beta-anfrage?utm_source=meta&utm_medium=paid&utm_campaign=beta_14d&utm_content=hook4_ugc
+# CTA-Button: Mehr erfahren
+
+--- PRIMÄRTEXT (einfügen) ---
+
+Wer sortiert eigentlich eure Belege?
+
+Genau. Niemand.
+
+Deshalb TaxDoc Beta: hochladen, KI hilft beim Sortieren, Überblick behalten.
+Hilfsmittel — keine Steuerberatung. Feedback willkommen.
+
+Beta gratis. Kein Abo-Zwang.
+
+→ Jetzt Beta anfragen
+
+--- ÜBERSCHRIFT ---
+Wer sortiert eure Belege?
+
+--- BESCHREIBUNG ---
+Beta gratis · Upload · KI · Überblick

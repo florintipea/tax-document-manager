@@ -1,0 +1,24 @@
+# TaxDoc Meta Ad D — Hook „Download-Chaos“
+# Creative: Hook 1 aus docs/ADS-WORLDCLASS-PLAYBOOK-DE.md (oder Reel 04 + neuer Slide-1-Text)
+# Ziel-URL: https://taxdoc-beta.onrender.com/beta-anfrage?utm_source=meta&utm_medium=paid&utm_campaign=beta_14d&utm_content=hook_download
+# CTA-Button: Mehr erfahren
+
+--- PRIMÄRTEXT (einfügen) ---
+
+Steuer-PDFs im Download-Ordner vergraben?
+
+Du suchst, tippst ab, verlierst den Faden —
+und die Unterlagen bleiben Chaos.
+
+TaxDoc Beta: Belege hochladen, KI hilft beim Sortieren, Überblick statt Ordner-Chaos.
+Hilfsmittel — keine Steuerberatung. Abgabe bleibt bei dir.
+
+Kostenlos testen. Kein Abo-Zwang.
+
+→ Beta anfragen
+
+--- ÜBERSCHRIFT ---
+Download-Chaos? Ein Ort reicht.
+
+--- BESCHREIBUNG ---
+Beta gratis · Belege · KI · Überblick
