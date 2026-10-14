@@ -1,0 +1,16 @@
+# Render.com — TaxDoc-Vermieter pilot site (separate from taxdoc-beta)
+services:
+  - type: web
+    name: taxdoc-vermieter
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOSTNAME
+        value: 0.0.0.0
+      # Product / beta CTA target (TaxDoc main app)
+      - key: TAXDOC_BETA_URL
+        value: https://taxdoc-beta.onrender.com

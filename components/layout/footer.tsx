@@ -39,6 +39,12 @@ export function AppFooter() {
               {t("trust.nav")}
             </Link>
             <Link
+              href="/vermieter"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              Vermieter
+            </Link>
+            <Link
               href="/legal/impressum"
               className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >

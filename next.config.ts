@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '*': [
       './dist/**/*',
+      './apps/**/*',
       './marketing/**/*',
       './docs/**/*',
       './.git/**/*',

@@ -10,6 +10,8 @@ prisma/dev.db-journal
 prisma/prisma
 .tools
 dist
+apps
+marketing
 mobile/android/.gradle
 mobile/android/app/build
 mobile/android/build
