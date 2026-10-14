@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0c1a17;
+  --pine: #1a4a3c;
+  --pine-deep: #0f2e26;
+  --moss: #2f6b55;
+  --fog: #e6efeb;
+  --mist: #c5d9d0;
+  --paper: #f4f7f5;
+  --sand: #d8cfc3;
+  --accent: #3d7a62;
+  --accent-soft: #d5e8df;
+  --line: rgba(12, 26, 23, 0.12);
+}
+
+@theme inline {
+  --font-display: var(--font-syne);
+  --font-body: var(--font-figtree);
+  --color-ink: var(--ink);
+  --color-pine: var(--pine);
+  --color-moss: var(--moss);
+  --color-fog: var(--fog);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-1.5%, 1.2%, 0) scale(1.04);
+  }
+}
+
+@keyframes line-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay {
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.hero-media {
+  animation: drift 28s ease-in-out alternate infinite;
+}
+
+.accent-line {
+  transform-origin: left;
+  animation: line-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-rise-delay-2,
+  .hero-media,
+  .accent-line {
+    animation: none;
+  }
+}
